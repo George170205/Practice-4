@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Form with Validation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: 300;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fff;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        input.valid {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        input.invalid {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.05);
+            animation: shake 0.3s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 13px;
+            margin-top: 8px;
+            padding-left: 5px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .error-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .success-message {
+            color: #10b981;
+            font-size: 13px;
+            margin-top: 8px;
+            padding-left: 5px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .success-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .form-status {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+
+        .form-status.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .form-status.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .icon {
+            font-size: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .form-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Contact Information</h1>
+        <form id="contactForm" novalidate>
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="Enter your full name">
+                <div class="error-message" id="nameError">
+                    <span class="icon">⚠️</span>
+                    <span class="text"></span>
+                </div>
+                <div class="success-message" id="nameSuccess">
+                    <span class="icon">✓</span>
+                    <span class="text">Valid name</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email address">
+                <div class="error-message" id="emailError">
+                    <span class="icon">⚠️</span>
+                    <span class="text"></span>
+                </div>
+                <div class="success-message" id="emailSuccess">
+                    <span class="icon">✓</span>
+                    <span class="text">Valid email format</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
+                <div class="error-message" id="phoneError">
+                    <span class="icon">⚠️</span>
+                    <span class="text"></span>
+                </div>
+                <div class="success-message" id="phoneSuccess">
+                    <span class="icon">✓</span>
+                    <span class="text">Valid phone number</span>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn" disabled>
+                Submit Form
+            </button>
+        </form>
+
+        <div class="form-status" id="formStatus"></div>
+    </div>
+
+    <script>
+        class FormValidator {
+            constructor() {
+                this.form = document.getElementById('contactForm');
+                this.submitBtn = document.getElementById('submitBtn');
+                this.formStatus = document.getElementById('formStatus');
+                
+                this.fields = {
+                    name: {
+                        input: document.getElementById('name'),
+                        error: document.getElementById('nameError'),
+                        success: document.getElementById('nameSuccess'),
+                        isValid: false
+                    },
+                    email: {
+                        input: document.getElementById('email'),
+                        error: document.getElementById('emailError'),
+                        success: document.getElementById('emailSuccess'),
+                        isValid: false
+                    },
+                    phone: {
+                        input: document.getElementById('phone'),
+                        error: document.getElementById('phoneError'),
+                        success: document.getElementById('phoneSuccess'),
+                        isValid: false
+                    }
+                };
+
+                this.init();
+            }
+
+            init() {
+                // Add event listeners for real-time validation
+                Object.keys(this.fields).forEach(fieldName => {
+                    const field = this.fields[fieldName];
+                    
+                    field.input.addEventListener('input', () => {
+                        this.validateField(fieldName);
+                        this.updateSubmitButton();
+                    });
+
+                    field.input.addEventListener('blur', () => {
+                        this.validateField(fieldName);
+                    });
+
+                    field.input.addEventListener('focus', () => {
+                        this.hideFormStatus();
+                    });
+                });
+
+                // Form submission handler
+                this.form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleSubmit();
+                });
+            }
+
+            validateField(fieldName) {
+                const field = this.fields[fieldName];
+                const value = field.input.value.trim();
+                let isValid = false;
+                let errorMessage = '';
+
+                switch (fieldName) {
+                    case 'name':
+                        if (value.length === 0) {
+                            errorMessage = 'Name is required';
+                        } else if (value.length < 2) {
+                            errorMessage = 'Name must be at least 2 characters long';
+                        } else if (!/^[a-zA-Z\s'-]+$/.test(value)) {
+                            errorMessage = 'Name can only contain letters, spaces, hyphens, and apostrophes';
+                        } else {
+                            isValid = true;
+                        }
+                        break;
+
+                    case 'email':
+                        if (value.length === 0) {
+                            errorMessage = 'Email is required';
+                        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                            errorMessage = 'Please enter a valid email address';
+                        } else {
+                            isValid = true;
+                        }
+                        break;
+
+                    case 'phone':
+                        const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+                        const cleanPhone = value.replace(/[\s\-\(\)]/g, '');
+                        
+                        if (value.length === 0) {
+                            errorMessage = 'Phone number is required';
+                        } else if (cleanPhone.length < 10) {
+                            errorMessage = 'Phone number must be at least 10 digits';
+                        } else if (cleanPhone.length > 15) {
+                            errorMessage = 'Phone number cannot exceed 15 digits';
+                        } else if (!phoneRegex.test(cleanPhone)) {
+                            errorMessage = 'Please enter a valid phone number';
+                        } else {
+                            isValid = true;
+                        }
+                        break;
+                }
+
+                this.updateFieldUI(field, isValid, errorMessage);
+                field.isValid = isValid;
+                
+                return isValid;
+            }
+
+            updateFieldUI(field, isValid, errorMessage) {
+                // Remove existing classes
+                field.input.classList.remove('valid', 'invalid');
+                field.error.classList.remove('show');
+                field.success.classList.remove('show');
+
+                if (field.input.value.trim().length > 0) {
+                    if (isValid) {
+                        field.input.classList.add('valid');
+                        setTimeout(() => field.success.classList.add('show'), 100);
+                    } else {
+                        field.input.classList.add('invalid');
+                        field.error.querySelector('.text').textContent = errorMessage;
+                        setTimeout(() => field.error.classList.add('show'), 100);
+                    }
+                }
+            }
+
+            updateSubmitButton() {
+                const allValid = Object.values(this.fields).every(field => field.isValid);
+                this.submitBtn.disabled = !allValid;
+                
+                if (allValid) {
+                    this.submitBtn.style.opacity = '1';
+                } else {
+                    this.submitBtn.style.opacity = '0.6';
+                }
+            }
+
+            handleSubmit() {
+                // Validate all fields one more time
+                let allValid = true;
+                Object.keys(this.fields).forEach(fieldName => {
+                    if (!this.validateField(fieldName)) {
+                        allValid = false;
+                    }
+                });
+
+                if (allValid) {
+                    this.showFormStatus('Form submitted successfully!', 'success');
+                    
+                    // Simulate form submission
+                    this.submitBtn.textContent = 'Submitting...';
+                    this.submitBtn.disabled = true;
+                    
+                    setTimeout(() => {
+                        this.submitBtn.textContent = 'Submit Form';
+                        this.form.reset();
+                        this.resetForm();
+                    }, 2000);
+                }
+            }
+
+            showFormStatus(message, type) {
+                this.formStatus.textContent = message;
+                this.formStatus.className = `form-status ${type}`;
+                setTimeout(() => {
+                    this.formStatus.classList.add('show');
+                }, 100);
+            }
+
+            hideFormStatus() {
+                this.formStatus.classList.remove('show');
+            }
+
+            resetForm() {
+                Object.values(this.fields).forEach(field => {
+                    field.input.classList.remove('valid', 'invalid');
+                    field.error.classList.remove('show');
+                    field.success.classList.remove('show');
+                    field.isValid = false;
+                });
+                
+                this.updateSubmitButton();
+                this.hideFormStatus();
+            }
+        }
+
+        // Initialize the form validator when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new FormValidator();
+        });
+    </script>
+</body>
+</html>
